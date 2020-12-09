@@ -98,7 +98,8 @@ def unit(session):
 
 
 @nox.session(python=SYSTEM_TEST_PYTHON_VERSIONS)
-def system(session):
+@nox.parametrize("GOOGLE_CLOUD_DISABLE_GRPC", [False, True])
+def system(session, GOOGLE_CLOUD_DISABLE_GRPC):
     """Run the system test suite."""
     system_test_path = os.path.join("tests", "system.py")
     system_test_folder_path = os.path.join("tests", "system")
@@ -126,11 +127,17 @@ def system(session):
     )
     session.install("-e", ".")
 
+    env = {}
+    if GOOGLE_CLOUD_DISABLE_GRPC:
+        env["GOOGLE_CLOUD_DISABLE_GRPC"] = "True"
+
     # Run py.test against the system tests.
     if system_test_exists:
-        session.run("py.test", "--quiet", system_test_path, *session.posargs)
+        session.run("py.test", "--quiet", system_test_path, env=env, *session.posargs)
     if system_test_folder_exists:
-        session.run("py.test", "--quiet", system_test_folder_path, *session.posargs)
+        session.run(
+            "py.test", "--quiet", system_test_folder_path, env=env, *session.posargs
+        )
 
 
 @nox.session(python=DEFAULT_PYTHON_VERSION)

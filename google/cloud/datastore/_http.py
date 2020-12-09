@@ -181,7 +181,13 @@ class HTTPDatastoreAPI(object):
         )
 
     def run_query(
-        self, project_id, partition_id, read_options=None, query=None, gql_query=None
+        self,
+        project_id,
+        partition_id,
+        read_options=None,
+        query=None,
+        gql_query=None,
+        request=None,
     ):
         """Perform a ``runQuery`` request.
 
